@@ -106,6 +106,22 @@ func expandLayers(list []interface{}) []pagerduty.ScheduleLayer {
 	return result
 }
 
+// Expands an array of teams into []pagerduty.APIReference
+func expandTeams(list []interface{}) []pagerduty.APIReference {
+	result := make([]pagerduty.APIReference, 0, len(list))
+
+	for _, l := range list {
+		team := &pagerduty.APIReference{
+			ID:   l.(string),
+			Type: "team_reference",
+		}
+
+		result = append(result, *team)
+	}
+
+	return result
+}
+
 // Flattens an array of []pagerduty.ScheduleLayer into a map[string]interface{}
 func flattenLayers(list []pagerduty.ScheduleLayer) []map[string]interface{} {
 	result := make([]map[string]interface{}, 0, len(list))

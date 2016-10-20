@@ -30,6 +30,13 @@ func resourcePagerDutyEscalationPolicy() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
+			"teams": &schema.Schema{
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+			},
 			"rule": &schema.Schema{
 				Type:     schema.TypeList,
 				Required: true,
@@ -83,6 +90,10 @@ func buildEscalationPolicyStruct(d *schema.ResourceData) *pagerduty.EscalationPo
 		policy.NumLoops = uint(attr.(int))
 	}
 
+	if attr, ok := d.GetOk("teams"); ok {
+		policy.Teams = expandTeams(attr.([]interface{}))
+	}
+
 	return &policy
 }
 
@@ -116,6 +127,7 @@ func resourcePagerDutyEscalationPolicyRead(d *schema.ResourceData, meta interfac
 	}
 
 	d.Set("name", e.Name)
+	d.Set("teams", e.Teams)
 	d.Set("description", e.Description)
 	d.Set("num_loops", e.NumLoops)
 
