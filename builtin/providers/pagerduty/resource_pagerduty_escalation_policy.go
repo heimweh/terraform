@@ -77,40 +77,40 @@ func resourcePagerDutyEscalationPolicy() *schema.Resource {
 func buildEscalationPolicyStruct(d *schema.ResourceData) *pagerduty.EscalationPolicy {
 	escalationRules := d.Get("rule").([]interface{})
 
-	policy := pagerduty.EscalationPolicy{
+	escalationPolicy := pagerduty.EscalationPolicy{
 		Name:            d.Get("name").(string),
-		EscalationRules: expandRules(escalationRules),
+		EscalationRules: expandEscalationRules(escalationRules),
 	}
 
 	if attr, ok := d.GetOk("description"); ok {
-		policy.Description = attr.(string)
+		escalationPolicy.Description = attr.(string)
 	}
 
 	if attr, ok := d.GetOk("num_loops"); ok {
-		policy.NumLoops = uint(attr.(int))
+		escalationPolicy.NumLoops = uint(attr.(int))
 	}
 
 	if attr, ok := d.GetOk("teams"); ok {
-		policy.Teams = expandTeams(attr.([]interface{}))
+		escalationPolicy.Teams = expandTeams(attr.([]interface{}))
 	}
 
-	return &policy
+	return &escalationPolicy
 }
 
 func resourcePagerDutyEscalationPolicyCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pagerduty.Client)
 
-	e := buildEscalationPolicyStruct(d)
+	escalationPolicy := buildEscalationPolicyStruct(d)
 
-	log.Printf("[INFO] Creating PagerDuty escalation policy: %s", e.Name)
+	log.Printf("[INFO] Creating PagerDuty escalation policy: %s", escalationPolicy.Name)
 
-	e, err := client.CreateEscalationPolicy(*e)
+	escalationPolicy, err := client.CreateEscalationPolicy(*escalationPolicy)
 
 	if err != nil {
 		return err
 	}
 
-	d.SetId(e.ID)
+	d.SetId(escalationPolicy.ID)
 
 	return resourcePagerDutyEscalationPolicyRead(d, meta)
 }
@@ -120,18 +120,20 @@ func resourcePagerDutyEscalationPolicyRead(d *schema.ResourceData, meta interfac
 
 	log.Printf("[INFO] Reading PagerDuty escalation policy: %s", d.Id())
 
-	e, err := client.GetEscalationPolicy(d.Id(), &pagerduty.GetEscalationPolicyOptions{})
+	o := &pagerduty.GetEscalationPolicyOptions{}
+
+	escalationPolicy, err := client.GetEscalationPolicy(d.Id(), o)
 
 	if err != nil {
 		return err
 	}
 
-	d.Set("name", e.Name)
-	d.Set("teams", e.Teams)
-	d.Set("description", e.Description)
-	d.Set("num_loops", e.NumLoops)
+	d.Set("name", escalationPolicy.Name)
+	d.Set("teams", escalationPolicy.Teams)
+	d.Set("description", escalationPolicy.Description)
+	d.Set("num_loops", escalationPolicy.NumLoops)
 
-	if err := d.Set("rule", flattenRules(e.EscalationRules)); err != nil {
+	if err := d.Set("rule", flattenEscalationRules(escalationPolicy.EscalationRules)); err != nil {
 		return err
 	}
 
@@ -141,13 +143,11 @@ func resourcePagerDutyEscalationPolicyRead(d *schema.ResourceData, meta interfac
 func resourcePagerDutyEscalationPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*pagerduty.Client)
 
-	e := buildEscalationPolicyStruct(d)
+	escalationPolicy := buildEscalationPolicyStruct(d)
 
 	log.Printf("[INFO] Updating PagerDuty escalation policy: %s", d.Id())
 
-	e, err := client.UpdateEscalationPolicy(d.Id(), e)
-
-	if err != nil {
+	if _, err := client.UpdateEscalationPolicy(d.Id(), escalationPolicy); err != nil {
 		return err
 	}
 
@@ -159,9 +159,7 @@ func resourcePagerDutyEscalationPolicyDelete(d *schema.ResourceData, meta interf
 
 	log.Printf("[INFO] Deleting PagerDuty escalation policy: %s", d.Id())
 
-	err := client.DeleteEscalationPolicy(d.Id())
-
-	if err != nil {
+	if err := client.DeleteEscalationPolicy(d.Id()); err != nil {
 		return err
 	}
 
