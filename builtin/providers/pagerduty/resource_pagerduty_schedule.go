@@ -1,6 +1,7 @@
 package pagerduty
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/PagerDuty/go-pagerduty"
@@ -102,6 +103,13 @@ func resourcePagerDutySchedule() *schema.Resource {
 									"duration_seconds": {
 										Type:     schema.TypeInt,
 										Required: true,
+										ValidateFunc: func(v interface{}, k string) (we []string, errors []error) {
+											value := v.(int)
+											if value >= 604800 {
+												errors = append(errors, fmt.Errorf("%q cannot be greater than 604800", k))
+											}
+											return
+										},
 									},
 								},
 							},
