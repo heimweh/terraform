@@ -24,6 +24,22 @@ func TestAccPagerDutyVendor_Basic(t *testing.T) {
 	})
 }
 
+func TestAccPagerDutyVendorRegex_Basic(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckPagerDutyScheduleDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: testAccPagerDutyVendorsRegexConfig,
+				Check: resource.ComposeTestCheckFunc(
+					testAccPagerDutyVendors("data.pagerduty_vendor.datadog"),
+				),
+			},
+		},
+	})
+}
+
 func testAccPagerDutyVendors(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 
@@ -51,6 +67,12 @@ func testAccPagerDutyVendors(n string) resource.TestCheckFunc {
 }
 
 const testAccPagerDutyVendorsConfig = `
+data "pagerduty_vendor" "datadog" {
+	name = "Datadog"
+}
+`
+
+const testAccPagerDutyVendorsRegexConfig = `
 data "pagerduty_vendor" "datadog" {
 	name_regex = "Datadog"
 }
