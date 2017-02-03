@@ -23,9 +23,10 @@ func resourcePagerDutyServiceIntegration() *schema.Resource {
 				Optional: true,
 			},
 			"type": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:          schema.TypeString,
+				Optional:      true,
+				ForceNew:      true,
+				ConflictsWith: []string{"vendor"},
 				ValidateFunc: validateValueFunc([]string{
 					"aws_cloudwatch_inbound_integration",
 					"cloudkick_inbound_integration",
@@ -39,9 +40,10 @@ func resourcePagerDutyServiceIntegration() *schema.Resource {
 				}),
 			},
 			"vendor": {
-				Type:     schema.TypeString,
-				ForceNew: true,
-				Optional: true,
+				Type:          schema.TypeString,
+				ForceNew:      true,
+				Optional:      true,
+				ConflictsWith: []string{"type"},
 			},
 			"integration_key": {
 				Type:     schema.TypeString,
@@ -60,9 +62,8 @@ func resourcePagerDutyServiceIntegration() *schema.Resource {
 func buildServiceIntegrationStruct(d *schema.ResourceData) *pagerduty.Integration {
 	serviceIntegration := pagerduty.Integration{
 		Name: d.Get("name").(string),
-		Type: d.Get("type").(string),
 		Service: &pagerduty.APIObject{
-			Type: "service_reference",
+			Type: "service",
 			ID:   d.Get("service").(string),
 		},
 		APIObject: pagerduty.APIObject{
@@ -71,18 +72,12 @@ func buildServiceIntegrationStruct(d *schema.ResourceData) *pagerduty.Integratio
 		},
 	}
 
-	if attr, ok := d.GetOk("integration_key"); ok {
-		serviceIntegration.IntegrationKey = attr.(string)
-	}
-
-	if attr, ok := d.GetOk("integration_email"); ok {
-		serviceIntegration.IntegrationEmail = attr.(string)
-	}
-
-	if attr, ok := d.GetOk("vendor"); ok {
+	if attr, ok := d.GetOk("type"); ok {
+		serviceIntegration.Type = attr.(string)
+	} else if attr, ok := d.GetOk("vendor"); ok {
 		serviceIntegration.Vendor = &pagerduty.APIObject{
 			ID:   attr.(string),
-			Type: "vendor_reference",
+			Type: "vendor",
 		}
 	}
 
@@ -99,7 +94,6 @@ func resourcePagerDutyServiceIntegrationCreate(d *schema.ResourceData, meta inte
 	service := d.Get("service").(string)
 
 	serviceIntegration, err := client.CreateIntegration(service, *serviceIntegration)
-
 	if err != nil {
 		return err
 	}
@@ -119,7 +113,6 @@ func resourcePagerDutyServiceIntegrationRead(d *schema.ResourceData, meta interf
 	o := &pagerduty.GetIntegrationOptions{}
 
 	serviceIntegration, err := client.GetIntegration(service, d.Id(), *o)
-
 	if err != nil {
 		if isNotFound(err) {
 			d.SetId("")
@@ -129,7 +122,6 @@ func resourcePagerDutyServiceIntegrationRead(d *schema.ResourceData, meta interf
 	}
 
 	d.Set("name", serviceIntegration.Name)
-	d.Set("type", serviceIntegration.Type)
 	d.Set("service", serviceIntegration.Service)
 	d.Set("vendor", serviceIntegration.Vendor)
 	d.Set("integration_key", serviceIntegration.IntegrationKey)
