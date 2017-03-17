@@ -32,6 +32,7 @@ func Provider() terraform.ResourceProvider {
 			"pagerduty_service":             resourcePagerDutyService(),
 			"pagerduty_service_integration": resourcePagerDutyServiceIntegration(),
 			"pagerduty_schedule":            resourcePagerDutySchedule(),
+			"pagerduty_escalation_rule":     resourcePagerDutyEscalationRule(),
 			"pagerduty_escalation_policy":   resourcePagerDutyEscalationPolicy(),
 		},
 
