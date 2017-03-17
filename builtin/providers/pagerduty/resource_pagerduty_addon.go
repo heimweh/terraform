@@ -85,11 +85,9 @@ func resourcePagerDutyAddonUpdate(d *schema.ResourceData, meta interface{}) erro
 
 	log.Printf("[INFO] Updating PagerDuty add-on %s", d.Id())
 
-	if _, err := client.UpdateAddon(d.Id(), *addon); err != nil {
-		return err
-	}
+	_, err := client.UpdateAddon(d.Id(), *addon)
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyAddonDelete(d *schema.ResourceData, meta interface{}) error {

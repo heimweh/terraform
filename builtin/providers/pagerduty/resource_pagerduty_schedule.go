@@ -50,10 +50,7 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if old == "" {
-									return false
-								}
-								return true
+								return old == ""
 							},
 						},
 						"end": {
@@ -65,10 +62,7 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if old == "" {
-									return false
-								}
-								return true
+								return old == ""
 							},
 						},
 						"rotation_turn_length_seconds": {
@@ -137,7 +131,6 @@ func resourcePagerDutyScheduleCreate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[INFO] Creating PagerDuty schedule: %s", schedule.Name)
 
 	schedule, err := client.CreateSchedule(*schedule)
-
 	if err != nil {
 		return err
 	}
@@ -153,8 +146,11 @@ func resourcePagerDutyScheduleRead(d *schema.ResourceData, meta interface{}) err
 	log.Printf("[INFO] Reading PagerDuty schedule: %s", d.Id())
 
 	schedule, err := client.GetSchedule(d.Id(), pagerduty.GetScheduleOptions{})
-
 	if err != nil {
+		if isNotFound(err) {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 
@@ -162,11 +158,9 @@ func resourcePagerDutyScheduleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("time_zone", schedule.TimeZone)
 	d.Set("description", schedule.Description)
 
-	if err := d.Set("layer", flattenScheduleLayers(schedule.ScheduleLayers)); err != nil {
-		return err
-	}
+	err = d.Set("layer", flattenScheduleLayers(schedule.ScheduleLayers))
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyScheduleUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -176,11 +170,9 @@ func resourcePagerDutyScheduleUpdate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Updating PagerDuty schedule: %s", d.Id())
 
-	if _, err := client.UpdateSchedule(d.Id(), *schedule); err != nil {
-		return err
-	}
+	_, err := client.UpdateSchedule(d.Id(), *schedule)
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyScheduleDelete(d *schema.ResourceData, meta interface{}) error {

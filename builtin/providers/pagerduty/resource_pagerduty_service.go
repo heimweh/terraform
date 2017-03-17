@@ -209,9 +209,11 @@ func buildServiceStruct(d *schema.ResourceData) *pagerduty.Service {
 			service.IncidentUrgencyRule = iur
 		}
 	}
+
 	if attr, ok := d.GetOk("support_hours"); ok {
 		service.SupportHours = expandSupportHours(attr)
 	}
+
 	if attr, ok := d.GetOk("scheduled_actions"); ok {
 		service.ScheduledActions = expandScheduledActions(attr)
 	}
@@ -227,7 +229,6 @@ func resourcePagerDutyServiceCreate(d *schema.ResourceData, meta interface{}) er
 	log.Printf("[INFO] Creating PagerDuty service %s", service.Name)
 
 	service, err := client.CreateService(*service)
-
 	if err != nil {
 		return err
 	}
@@ -242,10 +243,7 @@ func resourcePagerDutyServiceRead(d *schema.ResourceData, meta interface{}) erro
 
 	log.Printf("[INFO] Reading PagerDuty service %s", d.Id())
 
-	o := &pagerduty.GetServiceOptions{}
-
-	service, err := client.GetService(d.Id(), o)
-
+	service, err := client.GetService(d.Id(), &pagerduty.GetServiceOptions{})
 	if err != nil {
 		if isNotFound(err) {
 			d.SetId("")
@@ -283,11 +281,9 @@ func resourcePagerDutyServiceUpdate(d *schema.ResourceData, meta interface{}) er
 
 	log.Printf("[INFO] Updating PagerDuty service %s", d.Id())
 
-	if _, err := client.UpdateService(*service); err != nil {
-		return err
-	}
+	_, err := client.UpdateService(*service)
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyServiceDelete(d *schema.ResourceData, meta interface{}) error {

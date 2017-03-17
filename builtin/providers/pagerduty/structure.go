@@ -180,15 +180,13 @@ func flattenScheduleLayers(list []pagerduty.ScheduleLayer) []map[string]interfac
 func expandStringList(configured []interface{}) []string {
 	vs := make([]string, 0, len(configured))
 	for _, v := range configured {
-		vs = append(vs, string(v.(string)))
+		vs = append(vs, v.(string))
 	}
 	return vs
 }
 
 // Expands attribute slice to incident urgency rule, returns it and true if successful
 func expandIncidentUrgencyRule(incidentUrgencyList interface{}) (*pagerduty.IncidentUrgencyRule, bool) {
-	i := incidentUrgencyList.([]interface{})
-
 	i, ok := incidentUrgencyList.([]interface{})
 	if !ok {
 		return nil, false

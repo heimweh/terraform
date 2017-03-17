@@ -121,7 +121,6 @@ func resourcePagerDutyUserCreate(d *schema.ResourceData, meta interface{}) error
 	log.Printf("[INFO] Creating PagerDuty user %s", user.Name)
 
 	user, err := client.CreateUser(*user)
-
 	if err != nil {
 		return err
 	}
@@ -136,11 +135,12 @@ func resourcePagerDutyUserRead(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[INFO] Reading PagerDuty user %s", d.Id())
 
-	o := &pagerduty.GetUserOptions{}
-
-	user, err := client.GetUser(d.Id(), *o)
-
+	user, err := client.GetUser(d.Id(), pagerduty.GetUserOptions{})
 	if err != nil {
+		if isNotFound(err) {
+			d.SetId("")
+			return nil
+		}
 		return err
 	}
 
@@ -186,27 +186,24 @@ func resourcePagerDutyUserUpdate(d *schema.ResourceData, meta interface{}) error
 		add := expandStringList(ns.Difference(os).List())
 
 		for _, t := range remove {
-			_, tErr := client.GetTeam(t)
-
-			if tErr != nil {
+			_, err := client.GetTeam(t)
+			if err != nil {
 				log.Printf("[INFO] PagerDuty team: %s not found, removing dangling team reference for user %s", t, d.Id())
 				continue
 			}
 
 			log.Printf("[INFO] Removing PagerDuty user %s from team: %s", d.Id(), t)
 
-			rErr := client.RemoveUserFromTeam(t, d.Id())
-			if rErr != nil {
-				return rErr
+			if err = client.RemoveUserFromTeam(t, d.Id()); err != nil {
+				return err
 			}
 		}
 
 		for _, t := range add {
 			log.Printf("[INFO] Adding PagerDuty user %s to team: %s", d.Id(), t)
 
-			aErr := client.AddUserToTeam(t, d.Id())
-			if aErr != nil {
-				return aErr
+			if err := client.AddUserToTeam(t, d.Id()); err != nil {
+				return err
 			}
 		}
 	}

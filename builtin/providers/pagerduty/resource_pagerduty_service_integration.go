@@ -110,7 +110,6 @@ func resourcePagerDutyServiceIntegrationCreate(d *schema.ResourceData, meta inte
 	service := d.Get("service").(string)
 
 	serviceIntegration, err := client.CreateIntegration(service, *serviceIntegration)
-
 	if err != nil {
 		return err
 	}
@@ -158,11 +157,9 @@ func resourcePagerDutyServiceIntegrationUpdate(d *schema.ResourceData, meta inte
 
 	log.Printf("[INFO] Updating PagerDuty service integration %s", d.Id())
 
-	if _, err := client.UpdateIntegration(service, *serviceIntegration); err != nil {
-		return err
-	}
+	_, err := client.UpdateIntegration(service, *serviceIntegration)
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyServiceIntegrationDelete(d *schema.ResourceData, meta interface{}) error {

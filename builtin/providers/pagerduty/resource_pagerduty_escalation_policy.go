@@ -123,7 +123,6 @@ func resourcePagerDutyEscalationPolicyRead(d *schema.ResourceData, meta interfac
 	o := &pagerduty.GetEscalationPolicyOptions{}
 
 	escalationPolicy, err := client.GetEscalationPolicy(d.Id(), o)
-
 	if err != nil {
 		return err
 	}
@@ -133,11 +132,9 @@ func resourcePagerDutyEscalationPolicyRead(d *schema.ResourceData, meta interfac
 	d.Set("description", escalationPolicy.Description)
 	d.Set("num_loops", escalationPolicy.NumLoops)
 
-	if err := d.Set("rule", flattenEscalationRules(escalationPolicy.EscalationRules)); err != nil {
-		return err
-	}
+	err = d.Set("rule", flattenEscalationRules(escalationPolicy.EscalationRules))
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyEscalationPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
@@ -147,11 +144,9 @@ func resourcePagerDutyEscalationPolicyUpdate(d *schema.ResourceData, meta interf
 
 	log.Printf("[INFO] Updating PagerDuty escalation policy: %s", d.Id())
 
-	if _, err := client.UpdateEscalationPolicy(d.Id(), escalationPolicy); err != nil {
-		return err
-	}
+	_, err := client.UpdateEscalationPolicy(d.Id(), escalationPolicy)
 
-	return nil
+	return err
 }
 
 func resourcePagerDutyEscalationPolicyDelete(d *schema.ResourceData, meta interface{}) error {

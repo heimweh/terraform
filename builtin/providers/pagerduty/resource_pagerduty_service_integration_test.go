@@ -80,7 +80,7 @@ func testAccCheckPagerDutyServiceIntegrationDestroy(s *terraform.State) error {
 			continue
 		}
 
-		service, _ := s.RootModule().Resources["pagerduty_service.foo"]
+		service := s.RootModule().Resources["pagerduty_service.foo"]
 
 		_, err := client.GetIntegration(service.Primary.ID, r.Primary.ID, pagerduty.GetIntegrationOptions{})
 
@@ -103,7 +103,7 @@ func testAccCheckPagerDutyServiceIntegrationExists(n string) resource.TestCheckF
 			return fmt.Errorf("No Service Integration ID is set")
 		}
 
-		service, _ := s.RootModule().Resources["pagerduty_service.foo"]
+		service := s.RootModule().Resources["pagerduty_service.foo"]
 
 		client := testAccProvider.Meta().(*pagerduty.Client)
 
