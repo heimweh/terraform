@@ -1,12 +1,14 @@
 package pagerduty
 
-import pagerduty "github.com/PagerDuty/go-pagerduty"
+import (
+	pagerduty "github.com/PagerDuty/go-pagerduty"
+)
 
 // Expands configured slice into []pagerduty.EscalationRule
 func expandEscalationRules(configured interface{}) []pagerduty.EscalationRule {
-	var rules []pagerduty.EscalationRule
-
 	rawRules := configured.([]interface{})
+
+	var rules []pagerduty.EscalationRule
 
 	for _, raw := range rawRules {
 		rule := raw.(map[string]interface{})
@@ -22,10 +24,27 @@ func expandEscalationRules(configured interface{}) []pagerduty.EscalationRule {
 	return rules
 }
 
-func expandEscalationRuleTargets(configured interface{}) []pagerduty.APIObject {
-	var targets []pagerduty.APIObject
+// Flattens a slice of []pagerduty.EscalationRule into []map[string]interface{}
+func flattenEscalationRules(rules []pagerduty.EscalationRule) []map[string]interface{} {
+	var result []map[string]interface{}
 
+	for _, rule := range rules {
+		r := map[string]interface{}{
+			"id": rule.ID,
+			"escalation_delay_in_minutes": rule.Delay,
+			"target":                      flattenEscalationRuleTargets(rule.Targets),
+		}
+
+		result = append(result, r)
+	}
+
+	return result
+}
+
+func expandEscalationRuleTargets(configured interface{}) []pagerduty.APIObject {
 	rawTargets := configured.([]interface{})
+
+	var targets []pagerduty.APIObject
 
 	for _, raw := range rawTargets {
 		target := raw.(map[string]interface{})
@@ -51,75 +70,128 @@ func flattenEscalationRuleTargets(targets []pagerduty.APIObject) []map[string]in
 	return result
 }
 
-// Flattens a slice of []pagerduty.EscalationRule into []map[string]interface{}
-func flattenEscalationRules(rules []pagerduty.EscalationRule) []map[string]interface{} {
-	var result []map[string]interface{}
+func expandScheduleUsers(configured interface{}) []pagerduty.UserReference {
+	rawUsers := configured.([]interface{})
 
-	for _, rule := range rules {
-		r := map[string]interface{}{
-			"id": rule.ID,
-			"escalation_delay_in_minutes": rule.Delay,
-			"target":                      flattenEscalationRuleTargets(rule.Targets),
+	var users []pagerduty.UserReference
+
+	for _, raw := range rawUsers {
+		user := raw.(string)
+		users = append(users, pagerduty.UserReference{
+			User: pagerduty.APIObject{
+				ID:   user,
+				Type: "user",
+			},
+		})
+	}
+
+	return users
+}
+
+func expandScheduleRestrictions(configured interface{}) []pagerduty.Restriction {
+	rawRestrictions := configured.([]interface{})
+
+	var restrictions []pagerduty.Restriction
+
+	for _, raw := range rawRestrictions {
+		restriction := raw.(map[string]interface{})
+		restrictions = append(restrictions, pagerduty.Restriction{
+			Type:            restriction["type"].(string),
+			StartTimeOfDay:  restriction["start_time_of_day"].(string),
+			StartDayOfWeek:  uint(restriction["start_day_of_week"].(int)),
+			DurationSeconds: uint(restriction["duration_seconds"].(int)),
+		},
+		)
+	}
+
+	return restrictions
+}
+
+// Expands configured slice into []pagerduty.ScheduleLayer
+func expandScheduleLayers(configured interface{}) []pagerduty.ScheduleLayer {
+	rawLayers := configured.([]interface{})
+
+	var layers []pagerduty.ScheduleLayer
+
+	for _, raw := range rawLayers {
+		layer := raw.(map[string]interface{})
+
+		scheduleLayer := &pagerduty.ScheduleLayer{
+			Name:                      layer["name"].(string),
+			Start:                     layer["start"].(string),
+			End:                       layer["end"].(string),
+			Users:                     expandScheduleUsers(layer["users"]),
+			Restrictions:              expandScheduleRestrictions(layer["restriction"]),
+			RotationVirtualStart:      layer["rotation_virtual_start"].(string),
+			RotationTurnLengthSeconds: uint(layer["rotation_turn_length_seconds"].(int)),
+			APIObject: pagerduty.APIObject{
+				ID: layer["id"].(string),
+			},
 		}
 
-		result = append(result, r)
+		layers = append(layers, *scheduleLayer)
+	}
+
+	return layers
+}
+
+func flattenScheduleUsers(users []pagerduty.UserReference) []string {
+	var result []string
+
+	for _, user := range users {
+		result = append(result, user.User.ID)
 	}
 
 	return result
 }
 
-// Expands configured slice into []pagerduty.ScheduleLayer
-func expandScheduleLayers(configured interface{}) []pagerduty.ScheduleLayer {
-	var layers []pagerduty.ScheduleLayer
+func flattenScheduleRestrictions(restrictions []pagerduty.Restriction) []map[string]interface{} {
+	var result []map[string]interface{}
 
-	rawLayers := configured.([]interface{})
-
-	for _, raw := range rawLayers {
-		layer := raw.(map[string]interface{})
-		rawUsers := layer["users"].([]interface{})
-		rawRestrictions := layer["restriction"].([]interface{})
-
-		sLayer := &pagerduty.ScheduleLayer{
-			Name:                      layer["name"].(string),
-			Start:                     layer["start"].(string),
-			End:                       layer["end"].(string),
-			RotationVirtualStart:      layer["rotation_virtual_start"].(string),
-			RotationTurnLengthSeconds: uint(layer["rotation_turn_length_seconds"].(int)),
+	for _, restriction := range restrictions {
+		scheduleRestriction := map[string]interface{}{
+			"duration_seconds":  restriction.DurationSeconds,
+			"start_time_of_day": restriction.StartTimeOfDay,
+			"type":              restriction.Type,
 		}
 
-		if layer["id"] != "" {
-			sLayer.ID = layer["id"].(string)
+		if restriction.StartDayOfWeek > 0 {
+			scheduleRestriction["start_day_of_week"] = restriction.StartDayOfWeek
 		}
 
-		for _, rawUser := range rawUsers {
-			sLayer.Users = append(
-				sLayer.Users,
-				pagerduty.UserReference{
-					User: pagerduty.APIObject{
-						ID:   rawUser.(string),
-						Type: "user_reference",
-					},
-				},
-			)
-		}
-
-		for _, rawRestriction := range rawRestrictions {
-			restriction := rawRestriction.(map[string]interface{})
-			sLayer.Restrictions = append(
-				sLayer.Restrictions,
-				pagerduty.Restriction{
-					Type:            restriction["type"].(string),
-					StartTimeOfDay:  restriction["start_time_of_day"].(string),
-					StartDayOfWeek:  uint(restriction["start_day_of_week"].(int)),
-					DurationSeconds: uint(restriction["duration_seconds"].(int)),
-				},
-			)
-		}
-
-		layers = append(layers, *sLayer)
+		result = append(result, scheduleRestriction)
 	}
 
-	return layers
+	return result
+}
+
+// Flattens a slice of []pagerduty.ScheduleLayer into []map[string]interface{}
+func flattenScheduleLayers(layers []pagerduty.ScheduleLayer) []map[string]interface{} {
+	var result []map[string]interface{}
+
+	for _, layer := range layers {
+		scheduleLayer := map[string]interface{}{
+			"id":                           layer.ID,
+			"name":                         layer.Name,
+			"start":                        layer.Start,
+			"end":                          layer.End,
+			"users":                        flattenScheduleUsers(layer.Users),
+			"restriction":                  flattenScheduleRestrictions(layer.Restrictions),
+			"rotation_virtual_start":       layer.RotationVirtualStart,
+			"rotation_turn_length_seconds": layer.RotationTurnLengthSeconds,
+		}
+
+		result = append(result, scheduleLayer)
+	}
+
+	// Reverse the final result and return it
+	var resultReversed []map[string]interface{}
+
+	for i := len(result) - 1; i >= 0; i-- {
+		resultReversed = append(resultReversed, result[i])
+	}
+
+	return resultReversed
 }
 
 // Expands configured slice into []pagerduty.APIReference
@@ -134,66 +206,16 @@ func expandTeams(configured interface{}) []pagerduty.APIReference {
 			Type: "team_reference",
 		}
 
-		teams = append(result, *team)
+		teams = append(teams, *team)
 	}
 
 	return teams
 }
 
-// Flattens a slice of []pagerduty.ScheduleLayer into []map[string]interface{}
-func flattenScheduleLayers(layers []pagerduty.ScheduleLayer) []map[string]interface{} {
-	var result []map[string]interface{}
-
-	for _, layer := range layers {
-		l := map[string]interface{}{
-			"id":    layer.ID,
-			"name":  layer.Name,
-			"start": layer.Start,
-			"end":   layer.End,
-			"rotation_virtual_start":       layer.RotationVirtualStart,
-			"rotation_turn_length_seconds": layer.RotationTurnLengthSeconds,
-		}
-
-		var users []string
-		for _, u := range layer.Users {
-			users = append(users, u.User.ID)
-		}
-		l["users"] = users
-
-		var restrictions []map[string]interface{}
-		for _, r := range layer.Restrictions {
-			restriction := map[string]interface{}{
-				"duration_seconds":  r.DurationSeconds,
-				"start_time_of_day": r.StartTimeOfDay,
-				"type":              r.Type,
-			}
-
-			if r.StartDayOfWeek > 0 {
-				restriction["start_day_of_week"] = r.StartDayOfWeek
-			}
-
-			restrictions = append(restrictions, restriction)
-		}
-
-		l["restriction"] = restrictions
-
-		result = append(result, l)
-	}
-
-	// Reverse the final result and return it
-	var resultReversed []map[string]interface{}
-
-	for i := len(result) - 1; i >= 0; i-- {
-		resultReversed = append(resultReversed, result[i])
-	}
-
-	return resultReversed
-}
-
 // Takes the result of flatmap.Expand for an array of strings
 // and returns a []string
 func expandStringList(configured []interface{}) []string {
-	vs := make([]string, 0, len(configured))
+	var vs []string
 	for _, v := range configured {
 		vs = append(vs, v.(string))
 	}
