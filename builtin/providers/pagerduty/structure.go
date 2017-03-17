@@ -2,30 +2,48 @@ package pagerduty
 
 import pagerduty "github.com/PagerDuty/go-pagerduty"
 
+// Expands an array of escalation rule targets into []pagerduty.APIObject
+func expandEscalationRuleTargets(list []interface{}) []pagerduty.APIObject {
+	var targets []pagerduty.APIObject
+
+	for _, t := range list {
+		target := t.(map[string]interface{})
+		targets = append(
+			targets,
+			pagerduty.APIObject{
+				ID:   target["id"].(string),
+				Type: target["type"].(string),
+			},
+		)
+	}
+
+	return targets
+}
+
+// Flattens an array of []pagerduty.EscalationRule into a map[string]interface{}
+func flattenEscalationRuleTargets(list []pagerduty.APIObject) []map[string]interface{} {
+	var targets []map[string]interface{}
+
+	for _, t := range list {
+		targets = append(targets, map[string]interface{}{
+			"id":   t.ID,
+			"type": t.Type,
+		})
+	}
+
+	return targets
+}
+
 // Expands an array of escalation rules into []pagerduty.EscalationRules
 func expandEscalationRules(list []interface{}) []pagerduty.EscalationRule {
 	result := make([]pagerduty.EscalationRule, 0, len(list))
 
 	for _, r := range list {
 		rule := r.(map[string]interface{})
-
-		escalationRule := &pagerduty.EscalationRule{
-			Delay: uint(rule["escalation_delay_in_minutes"].(int)),
-		}
-
-		for _, t := range rule["target"].([]interface{}) {
-			target := t.(map[string]interface{})
-			escalationRule.Targets = append(
-				escalationRule.Targets,
-				pagerduty.APIObject{
-					ID:   target["id"].(string),
-					Type: target["type"].(string),
-				},
-			)
-		}
-
-		result = append(result, *escalationRule)
-
+		result = append(result, pagerduty.EscalationRule{
+			Delay:   uint(rule["escalation_delay_in_minutes"].(int)),
+			Targets: expandEscalationRuleTargets(rule["target"].([]interface{})),
+		})
 	}
 
 	return result
@@ -39,18 +57,7 @@ func flattenEscalationRules(list []pagerduty.EscalationRule) []map[string]interf
 		r := make(map[string]interface{})
 		r["id"] = i.ID
 		r["escalation_delay_in_minutes"] = i.Delay
-
-		if len(i.Targets) > 0 {
-			targets := make([]map[string]interface{}, 0, len(i.Targets))
-			for _, t := range i.Targets {
-				targets = append(targets, map[string]interface{}{
-					"id":   t.ID,
-					"type": t.Type,
-				})
-			}
-			r["target"] = targets
-		}
-
+		r["target"] = flattenEscalationRuleTargets(i.Targets)
 		result = append(result, r)
 	}
 
