@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/PagerDuty/go-pagerduty"
+	"github.com/hashicorp/errwrap"
 	"github.com/hashicorp/terraform/helper/schema"
 )
 
@@ -37,6 +38,7 @@ func resourcePagerDutyEscalationRule() *schema.Resource {
 							Optional: true,
 							Default:  "user_reference",
 						},
+
 						"id": {
 							Type:     schema.TypeString,
 							Required: true,
@@ -66,7 +68,7 @@ func resourcePagerDutyEscalationRuleCreate(d *schema.ResourceData, meta interfac
 
 	escalationRule, err := client.CreateEscalationRule(escID, *rule)
 	if err != nil {
-		return err
+		return errwrap.Wrapf("Failed to create escalation rule: {{err}}", err)
 	}
 
 	d.SetId(escalationRule.ID)
@@ -87,7 +89,8 @@ func resourcePagerDutyEscalationRuleRead(d *schema.ResourceData, meta interface{
 			d.SetId("")
 			return nil
 		}
-		return err
+
+		return errwrap.Wrapf("Failed to read escalation rule: {{err}}", err)
 	}
 
 	d.Set("escalation_delay_in_minutes", escalationRule.Delay)
@@ -105,7 +108,7 @@ func resourcePagerDutyEscalationRuleUpdate(d *schema.ResourceData, meta interfac
 	rule := buildEscalationRuleStruct(d)
 
 	if _, err := client.UpdateEscalationRule(escID, d.Id(), rule); err != nil {
-		return err
+		return errwrap.Wrapf("Failed to update escalation rule: {{err}}", err)
 	}
 
 	return nil
@@ -119,7 +122,7 @@ func resourcePagerDutyEscalationRuleDelete(d *schema.ResourceData, meta interfac
 	escID := d.Get("escalation_policy_id").(string)
 
 	if err := client.DeleteEscalationRule(escID, d.Id()); err != nil {
-		return err
+		return errwrap.Wrapf("Failed to delete escalation rule: {{err}}", err)
 	}
 
 	d.SetId("")
