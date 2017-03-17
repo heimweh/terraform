@@ -19,20 +19,6 @@ Please see https://www.terraform.io/docs/providers/pagerduty/index.html
 for more information on providing credentials for this provider.
 `
 
-// Validate validates that a PagerDuty token is set and working
-func (c *Config) Validate(client *pagerduty.Client) error {
-	if c.Token == "" {
-		return fmt.Errorf(invalidCredentials)
-	}
-
-	// Try to validate the token
-	if _, err := client.ListAbilities(); err != nil {
-		return fmt.Errorf(invalidCredentials)
-	}
-
-	return nil
-}
-
 // Client returns a new PagerDuty client
 func (c *Config) Client() (*pagerduty.Client, error) {
 	// Validate that the PagerDuty token is set
