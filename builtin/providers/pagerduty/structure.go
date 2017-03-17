@@ -30,9 +30,9 @@ func flattenEscalationRules(rules []pagerduty.EscalationRule) []map[string]inter
 
 	for _, rule := range rules {
 		r := map[string]interface{}{
-			"id": rule.ID,
+			"target": flattenEscalationRuleTargets(rule.Targets),
+			"id":     rule.ID,
 			"escalation_delay_in_minutes": rule.Delay,
-			"target":                      flattenEscalationRuleTargets(rule.Targets),
 		}
 
 		result = append(result, r)
@@ -116,7 +116,7 @@ func expandScheduleLayers(configured interface{}) []pagerduty.ScheduleLayer {
 	for _, raw := range rawLayers {
 		layer := raw.(map[string]interface{})
 
-		scheduleLayer := &pagerduty.ScheduleLayer{
+		scheduleLayer := pagerduty.ScheduleLayer{
 			Name:                      layer["name"].(string),
 			Start:                     layer["start"].(string),
 			End:                       layer["end"].(string),
@@ -129,7 +129,7 @@ func expandScheduleLayers(configured interface{}) []pagerduty.ScheduleLayer {
 			},
 		}
 
-		layers = append(layers, *scheduleLayer)
+		layers = append(layers, scheduleLayer)
 	}
 
 	return layers
@@ -196,9 +196,9 @@ func flattenScheduleLayers(layers []pagerduty.ScheduleLayer) []map[string]interf
 
 // Expands configured slice into []pagerduty.APIReference
 func expandTeams(configured interface{}) []pagerduty.APIReference {
-	var teams []pagerduty.APIReference
-
 	rawTeams := configured.([]interface{})
+
+	var teams []pagerduty.APIReference
 
 	for _, raw := range rawTeams {
 		team := &pagerduty.APIReference{
@@ -214,11 +214,15 @@ func expandTeams(configured interface{}) []pagerduty.APIReference {
 
 // Takes the result of flatmap.Expand for an array of strings
 // and returns a []string
-func expandStringList(configured []interface{}) []string {
+func expandStringList(configured interface{}) []string {
+	raw := configured.([]interface{})
+
 	var vs []string
-	for _, v := range configured {
+
+	for _, v := range raw {
 		vs = append(vs, v.(string))
 	}
+
 	return vs
 }
 
