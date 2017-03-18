@@ -15,7 +15,7 @@ func TestAccPagerDutyService_Basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPagerDutyServiceDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceConfig,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),
@@ -35,7 +35,7 @@ func TestAccPagerDutyService_Basic(t *testing.T) {
 						"pagerduty_service.foo", "incident_urgency_rule.0.type", "constant"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceConfigUpdated,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),
@@ -65,7 +65,7 @@ func TestAccPagerDutyService_BasicWithIncidentUrgencyRules(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPagerDutyServiceDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceWithIncidentUrgencyRulesConfig,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),
@@ -127,7 +127,7 @@ func TestAccPagerDutyService_BasicWithIncidentUrgencyRules(t *testing.T) {
 						"pagerduty_service.foo", "support_hours.0.type", "fixed_time_per_day"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceWithIncidentUrgencyRulesConfigUpdated,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),
@@ -199,7 +199,7 @@ func TestAccPagerDutyService_FromBasicToCustomIncidentUrgencyRules(t *testing.T)
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPagerDutyServiceDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceConfig,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),
@@ -219,7 +219,7 @@ func TestAccPagerDutyService_FromBasicToCustomIncidentUrgencyRules(t *testing.T)
 						"pagerduty_service.foo", "incident_urgency_rule.0.type", "constant"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceWithIncidentUrgencyRulesConfigUpdated,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceExists("pagerduty_service.foo"),

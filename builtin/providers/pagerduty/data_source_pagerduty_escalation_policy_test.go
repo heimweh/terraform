@@ -15,7 +15,7 @@ func TestAccDataSourcePagerDutyEscalationPolicy_Basic(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccDataSourcePagerDutyEscalationPolicyConfig(rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccDataSourcePagerDutyEscalationPolicy("pagerduty_escalation_policy.test", "data.pagerduty_escalation_policy.by_name"),

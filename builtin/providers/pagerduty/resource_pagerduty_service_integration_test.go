@@ -15,7 +15,7 @@ func TestAccPagerDutyServiceIntegration_Basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPagerDutyServiceIntegrationDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceIntegrationConfig,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceIntegrationExists("pagerduty_service_integration.foo"),
@@ -27,7 +27,7 @@ func TestAccPagerDutyServiceIntegration_Basic(t *testing.T) {
 						"pagerduty_service_integration.foo", "vendor", "PAM4FGS"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceIntegrationConfigUpdated,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceIntegrationExists("pagerduty_service_integration.foo"),
@@ -49,7 +49,7 @@ func TestAccPagerDutyServiceIntegrationGeneric_Basic(t *testing.T) {
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckPagerDutyServiceIntegrationDestroy,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceIntegrationGenericConfig,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceIntegrationExists("pagerduty_service_integration.foo"),
@@ -59,7 +59,7 @@ func TestAccPagerDutyServiceIntegrationGeneric_Basic(t *testing.T) {
 						"pagerduty_service_integration.foo", "type", "generic_events_api_inbound_integration"),
 				),
 			},
-			resource.TestStep{
+			{
 				Config: testAccCheckPagerDutyServiceIntegrationGenericConfigUpdated,
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckPagerDutyServiceIntegrationExists("pagerduty_service_integration.foo"),

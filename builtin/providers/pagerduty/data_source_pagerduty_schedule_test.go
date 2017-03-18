@@ -15,7 +15,7 @@ func TestAccDataSourcePagerDutySchedule_Basic(t *testing.T) {
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
-			resource.TestStep{
+			{
 				Config: testAccDataSourcePagerDutyScheduleConfig(rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccDataSourcePagerDutySchedule("pagerduty_schedule.test", "data.pagerduty_schedule.by_name"),
