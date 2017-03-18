@@ -50,7 +50,7 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Optional: true,
 							Computed: true,
 							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if old != "" {
+								if old == "" {
 									return false
 								}
 								return true
