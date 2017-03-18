@@ -114,12 +114,10 @@ func resourcePagerDutySchedule() *schema.Resource {
 }
 
 func buildScheduleStruct(d *schema.ResourceData) *pagerduty.Schedule {
-	scheduleLayers := d.Get("layer").([]interface{})
-
 	schedule := pagerduty.Schedule{
 		Name:           d.Get("name").(string),
 		TimeZone:       d.Get("time_zone").(string),
-		ScheduleLayers: expandScheduleLayers(scheduleLayers),
+		ScheduleLayers: expandScheduleLayers(d.Get("layer")),
 	}
 
 	if attr, ok := d.GetOk("description"); ok {
