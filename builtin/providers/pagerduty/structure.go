@@ -1,8 +1,6 @@
 package pagerduty
 
 import (
-	"fmt"
-
 	pagerduty "github.com/PagerDuty/go-pagerduty"
 )
 
@@ -117,8 +115,6 @@ func expandScheduleLayers(configured interface{}) []pagerduty.ScheduleLayer {
 
 	for _, raw := range rawLayers {
 		layer := raw.(map[string]interface{})
-
-		panic(fmt.Sprintf("Layer: %#v", layer))
 
 		scheduleLayer := pagerduty.ScheduleLayer{
 			Name:                      layer["name"].(string),
