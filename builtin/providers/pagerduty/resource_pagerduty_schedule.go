@@ -49,12 +49,6 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if old == "" {
-									return false
-								}
-								return true
-							},
 						},
 						"end": {
 							Type:     schema.TypeString,
@@ -64,12 +58,6 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								if old == "" {
-									return false
-								}
-								return true
-							},
 						},
 						"rotation_turn_length_seconds": {
 							Type:     schema.TypeInt,
