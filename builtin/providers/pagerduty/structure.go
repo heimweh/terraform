@@ -4,7 +4,6 @@ import (
 	"time"
 
 	pagerduty "github.com/PagerDuty/go-pagerduty"
-	"github.com/hashicorp/terraform/helper/schema"
 )
 
 // Expands an array of escalation rules into []pagerduty.EscalationRules
@@ -142,7 +141,7 @@ func expandTeams(list []interface{}) []pagerduty.APIReference {
 }
 
 // Flattens an array of []pagerduty.ScheduleLayer into a map[string]interface{}
-func flattenScheduleLayers(d *schema.ResourceData, list []pagerduty.ScheduleLayer) []map[string]interface{} {
+func flattenScheduleLayers(list []pagerduty.ScheduleLayer) []map[string]interface{} {
 	result := make([]map[string]interface{}, 0, len(list))
 
 	for _, i := range list {

@@ -149,7 +149,7 @@ func resourcePagerDutyScheduleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("time_zone", schedule.TimeZone)
 	d.Set("description", schedule.Description)
 
-	if err := d.Set("layer", flattenScheduleLayers(d, schedule.ScheduleLayers)); err != nil {
+	if err := d.Set("layer", flattenScheduleLayers(schedule.ScheduleLayers)); err != nil {
 		return err
 	}
 
