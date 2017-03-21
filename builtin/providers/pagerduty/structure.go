@@ -1,6 +1,9 @@
 package pagerduty
 
-import pagerduty "github.com/PagerDuty/go-pagerduty"
+import (
+	pagerduty "github.com/PagerDuty/go-pagerduty"
+	"github.com/hashicorp/terraform/helper/schema"
+)
 
 // Expands an array of escalation rules into []pagerduty.EscalationRules
 func expandEscalationRules(list []interface{}) []pagerduty.EscalationRule {
@@ -124,7 +127,7 @@ func expandTeams(list []interface{}) []pagerduty.APIReference {
 }
 
 // Flattens an array of []pagerduty.ScheduleLayer into a map[string]interface{}
-func flattenScheduleLayers(list []pagerduty.ScheduleLayer) []map[string]interface{} {
+func flattenScheduleLayers(d *schema.ResourceData, list []pagerduty.ScheduleLayer) []map[string]interface{} {
 	result := make([]map[string]interface{}, 0, len(list))
 
 	for _, i := range list {
@@ -132,7 +135,7 @@ func flattenScheduleLayers(list []pagerduty.ScheduleLayer) []map[string]interfac
 		r["id"] = i.ID
 		r["name"] = i.Name
 		r["end"] = i.End
-		r["start"] = i.Start
+		r["start"] = d.Get("start").(string)
 		r["rotation_virtual_start"] = i.RotationVirtualStart
 		r["rotation_turn_length_seconds"] = i.RotationTurnLengthSeconds
 
