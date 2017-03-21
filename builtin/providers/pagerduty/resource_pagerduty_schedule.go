@@ -1,9 +1,7 @@
 package pagerduty
 
 import (
-	"fmt"
 	"log"
-	"time"
 
 	"github.com/PagerDuty/go-pagerduty"
 	"github.com/hashicorp/terraform/helper/schema"
@@ -49,8 +47,8 @@ func resourcePagerDutySchedule() *schema.Resource {
 						},
 						"start": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
+							Required: true,
+							ForceNew: true,
 						},
 						"end": {
 							Type:     schema.TypeString,
@@ -58,36 +56,7 @@ func resourcePagerDutySchedule() *schema.Resource {
 						},
 						"rotation_virtual_start": {
 							Type:     schema.TypeString,
-							Optional: true,
-							Computed: true,
-							DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
-								d1, err := time.Parse(time.RFC3339, old)
-								if err != nil {
-									return false
-								}
-
-								d2, err := time.Parse(time.RFC3339, new)
-								if err != nil {
-									return false
-								}
-
-								return d1 == d2.Add(1*time.Hour)
-							},
-							StateFunc: func(v interface{}) string {
-								switch v.(type) {
-								case string:
-									d, err := time.Parse(time.RFC3339, v.(string))
-									if err != nil {
-										return fmt.Sprintf("<failed>")
-									}
-
-									d.Add(-1 * time.Hour)
-
-									return d.Format("2006-01-02T15:04:05.999999-07:00")
-								default:
-									return "<invalid>"
-								}
-							},
+							Required: true,
 						},
 						"rotation_turn_length_seconds": {
 							Type:     schema.TypeInt,
@@ -180,7 +149,7 @@ func resourcePagerDutyScheduleRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("time_zone", schedule.TimeZone)
 	d.Set("description", schedule.Description)
 
-	if err := d.Set("layer", flattenScheduleLayers(schedule.ScheduleLayers)); err != nil {
+	if err := d.Set("layer", flattenScheduleLayers(d, schedule.ScheduleLayers)); err != nil {
 		return err
 	}
 

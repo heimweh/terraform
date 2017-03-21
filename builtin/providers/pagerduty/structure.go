@@ -1,6 +1,8 @@
 package pagerduty
 
 import (
+	"time"
+
 	pagerduty "github.com/PagerDuty/go-pagerduty"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -67,11 +69,24 @@ func expandScheduleLayers(list []interface{}) []pagerduty.ScheduleLayer {
 	for _, l := range list {
 		layer := l.(map[string]interface{})
 
+		start := layer["start"].(string)
+		rvs := layer["rotation_virtual_start"].(string)
+
+		d1, err := time.Parse(time.RFC3339Nano, rvs)
+		if err != nil {
+			start = d1.UTC().Format(time.RFC3339Nano)
+		}
+
+		d2, err := time.Parse(time.RFC3339Nano, rvs)
+		if err != nil {
+			rvs = d2.UTC().Format(time.RFC3339Nano)
+		}
+
 		scheduleLayer := &pagerduty.ScheduleLayer{
-			Name:                      layer["name"].(string),
-			Start:                     layer["start"].(string),
-			End:                       layer["end"].(string),
-			RotationVirtualStart:      layer["rotation_virtual_start"].(string),
+			Start:                start,
+			RotationVirtualStart: rvs,
+			Name:                 layer["name"].(string),
+			End:                  layer["end"].(string),
 			RotationTurnLengthSeconds: uint(layer["rotation_turn_length_seconds"].(int)),
 		}
 
@@ -135,7 +150,7 @@ func flattenScheduleLayers(d *schema.ResourceData, list []pagerduty.ScheduleLaye
 		r["id"] = i.ID
 		r["name"] = i.Name
 		r["end"] = i.End
-		r["start"] = d.Get("start").(string)
+		r["start"] = i.Start
 		r["rotation_virtual_start"] = i.RotationVirtualStart
 		r["rotation_turn_length_seconds"] = i.RotationTurnLengthSeconds
 

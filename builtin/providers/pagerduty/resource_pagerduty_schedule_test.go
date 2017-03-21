@@ -29,6 +29,8 @@ func TestAccPagerDutySchedule_Basic(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.#", "1"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.name", "foo"),
+					resource.TestCheckResourceAttr(
+						"pagerduty_schedule.foo", "layer.0.rotation_virtual_start", "2015-11-06T20:00:00+01:00"),
 				),
 			},
 			resource.TestStep{
@@ -40,11 +42,13 @@ func TestAccPagerDutySchedule_Basic(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "description", "Managed by Terraform"),
 					resource.TestCheckResourceAttr(
-						"pagerduty_schedule.foo", "time_zone", "America/New_York"),
+						"pagerduty_schedule.foo", "time_zone", "Europe/Berlin"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.#", "1"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.name", "foo"),
+					resource.TestCheckResourceAttr(
+						"pagerduty_schedule.foo", "layer.0.rotation_virtual_start", "2015-11-06T22:00:00+01:00"),
 				),
 			},
 		},
@@ -84,7 +88,7 @@ func TestAccPagerDutySchedule_BasicWeek(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "description", "Managed by Terraform"),
 					resource.TestCheckResourceAttr(
-						"pagerduty_schedule.foo", "time_zone", "America/New_York"),
+						"pagerduty_schedule.foo", "time_zone", "Europe/Berlin"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.#", "1"),
 					resource.TestCheckResourceAttr(
@@ -252,12 +256,12 @@ resource "pagerduty_user" "foo" {
 resource "pagerduty_schedule" "foo" {
   name = "bar"
 
-  time_zone = "America/New_York"
+  time_zone = "Europe/Berlin"
 
   layer {
     name                         = "foo"
-    start                        = "2015-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T22:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -279,13 +283,13 @@ resource "pagerduty_user" "foo" {
 resource "pagerduty_schedule" "foo" {
   name = "foo"
 
-  time_zone   = "Europe/Berlin"
+	time_zone = "Europe/Berlin"
   description = "foo"
 
   layer {
     name                         = "foo"
-    start                        = "2015-11-06T22:00:00+01:00"
-    rotation_virtual_start       = "2015-11-06T22:00:00+01:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -308,12 +312,12 @@ resource "pagerduty_user" "foo" {
 resource "pagerduty_schedule" "foo" {
   name = "bar"
 
-  time_zone = "America/New_York"
+	time_zone = "Europe/Berlin"
 
   layer {
     name                         = "foo"
-    start                        = "2015-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
