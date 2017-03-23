@@ -29,8 +29,6 @@ func TestAccPagerDutySchedule_Basic(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.#", "1"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.name", "foo"),
-					resource.TestCheckResourceAttr(
-						"pagerduty_schedule.foo", "layer.0.rotation_virtual_start", "2035-11-06T20:00:00+01:00"),
 				),
 			},
 			resource.TestStep{
@@ -47,8 +45,6 @@ func TestAccPagerDutySchedule_Basic(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.#", "1"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.name", "foo"),
-					resource.TestCheckResourceAttr(
-						"pagerduty_schedule.foo", "layer.0.rotation_virtual_start", "2035-11-06T20:00:00+01:00"),
 				),
 			},
 		},
@@ -130,9 +126,6 @@ func TestAccPagerDutySchedule_Multi(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.0.restriction.0.start_time_of_day", "08:00:00"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.rotation_turn_length_seconds", "86400"),
-					// NOTE: Temporarily disabled due to API inconsistencies
-					// resource.TestCheckResourceAttr(
-					// "pagerduty_schedule.foo", "layer.0.rotation_virtual_start", "2035-11-06T20:00:00-05:00"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.0.users.#", "1"),
 
@@ -148,9 +141,6 @@ func TestAccPagerDutySchedule_Multi(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.1.restriction.0.start_day_of_week", "5"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.1.rotation_turn_length_seconds", "86400"),
-					// NOTE: Temporarily disabled due to API inconsistencies
-					// resource.TestCheckResourceAttr(
-					// "pagerduty_schedule.foo", "layer.1.rotation_virtual_start", "2035-11-06T20:00:00-05:00"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.1.users.#", "1"),
 
@@ -166,9 +156,6 @@ func TestAccPagerDutySchedule_Multi(t *testing.T) {
 						"pagerduty_schedule.foo", "layer.2.restriction.0.start_day_of_week", "1"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.2.rotation_turn_length_seconds", "86400"),
-					// NOTE: Temporarily disabled due to API inconsistencies
-					// resource.TestCheckResourceAttr(
-					// "pagerduty_schedule.foo", "layer.2.rotation_virtual_start", "2035-11-06T20:00:00-05:00"),
 					resource.TestCheckResourceAttr(
 						"pagerduty_schedule.foo", "layer.2.users.#", "1"),
 				),
@@ -233,8 +220,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-    start                        = "2035-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00+01:00"
+    start                        = "2018-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -260,8 +247,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2035-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00+01:00"
+		start                        = "2018-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -288,8 +275,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2035-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00+01:00"
+		start                        = "2018-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -316,8 +303,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2035-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00+01:00"
+		start                        = "2018-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -345,8 +332,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-    start                        = "2035-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00-05:00"
+    start                        = "2018-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -359,8 +346,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "bar"
-    start                        = "2035-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00-05:00"
+    start                        = "2018-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -374,8 +361,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foobar"
-    start                        = "2035-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2035-11-06T20:00:00-05:00"
+    start                        = "2018-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
