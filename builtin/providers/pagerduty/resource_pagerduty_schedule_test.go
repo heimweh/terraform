@@ -220,8 +220,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-    start                        = "2018-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
+    start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -247,8 +247,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2018-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -275,8 +275,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2018-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -303,8 +303,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-		start                        = "2018-11-06T20:00:00+01:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00+01:00"
+		start                        = "2015-11-06T20:00:00+01:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00+01:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -332,8 +332,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foo"
-    start                        = "2018-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
+    start                        = "2015-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -346,8 +346,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "bar"
-    start                        = "2018-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
+    start                        = "2015-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
@@ -361,8 +361,8 @@ resource "pagerduty_schedule" "foo" {
 
   layer {
     name                         = "foobar"
-    start                        = "2018-11-06T20:00:00-05:00"
-    rotation_virtual_start       = "2018-11-06T20:00:00-05:00"
+    start                        = "2015-11-06T20:00:00-05:00"
+    rotation_virtual_start       = "2015-11-06T20:00:00-05:00"
     rotation_turn_length_seconds = 86400
     users                        = ["${pagerduty_user.foo.id}"]
 
