@@ -72,12 +72,12 @@ func expandScheduleLayers(list []interface{}) []pagerduty.ScheduleLayer {
 		rvs := layer["rotation_virtual_start"].(string)
 
 		d1, err := time.Parse(time.RFC3339Nano, rvs)
-		if err != nil {
+		if err == nil {
 			start = d1.UTC().Format(time.RFC3339Nano)
 		}
 
 		d2, err := time.Parse(time.RFC3339Nano, rvs)
-		if err != nil {
+		if err == nil {
 			rvs = d2.UTC().Format(time.RFC3339Nano)
 		}
 

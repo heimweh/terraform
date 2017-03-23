@@ -21,15 +21,18 @@ func resourcePagerDutySchedule() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+
 			"time_zone": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "Managed by Terraform",
 			},
+
 			"layer": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -40,28 +43,33 @@ func resourcePagerDutySchedule() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+
 						"name": {
 							Type:     schema.TypeString,
 							Optional: true,
 							Computed: true,
 						},
+
 						"start": {
 							Type:     schema.TypeString,
 							Required: true,
-							ForceNew: true,
 						},
+
 						"end": {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+
 						"rotation_virtual_start": {
 							Type:     schema.TypeString,
 							Required: true,
 						},
+
 						"rotation_turn_length_seconds": {
 							Type:     schema.TypeInt,
 							Required: true,
 						},
+
 						"users": {
 							Type:     schema.TypeList,
 							Required: true,
@@ -69,6 +77,7 @@ func resourcePagerDutySchedule() *schema.Resource {
 								Type: schema.TypeString,
 							},
 						},
+
 						"restriction": {
 							Optional: true,
 							Type:     schema.TypeList,
@@ -78,14 +87,17 @@ func resourcePagerDutySchedule() *schema.Resource {
 										Type:     schema.TypeString,
 										Required: true,
 									},
+
 									"start_time_of_day": {
 										Type:     schema.TypeString,
 										Required: true,
 									},
+
 									"start_day_of_week": {
 										Type:     schema.TypeInt,
 										Optional: true,
 									},
+
 									"duration_seconds": {
 										Type:     schema.TypeInt,
 										Required: true,
