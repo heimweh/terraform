@@ -1,13 +1,22 @@
 package pagerduty
 
-import "strings"
+import (
+	"fmt"
+	"log"
+	"strings"
 
-func isNotFound(err error) bool {
-	if strings.Contains(err.Error(), "Failed call API endpoint. HTTP response code: 404") {
-		return true
+	"github.com/hashicorp/terraform/helper/schema"
+)
+
+func handleNotFound(err error, d *schema.ResourceData, resource string) error {
+	if strings.Contains(err.Error(), "HTTP response code: 404") {
+		// The resource doesn't exist anymore
+		log.Printf("[WARN] Removing %s because it's gone", resource)
+		d.SetId("")
+		return nil
 	}
 
-	return false
+	return fmt.Errorf("Error reading %s: %s", resource, err)
 }
 
 func isUnauthorized(err error) bool {

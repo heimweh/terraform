@@ -65,11 +65,7 @@ func resourcePagerDutyAddonRead(d *schema.ResourceData, meta interface{}) error 
 
 	addon, err := client.GetAddon(d.Id())
 	if err != nil {
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
-		}
-		return err
+		return handleNotFound(err, d, d.Id())
 	}
 
 	d.Set("name", addon.Name)

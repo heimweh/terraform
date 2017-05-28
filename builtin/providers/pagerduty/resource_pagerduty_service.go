@@ -247,11 +247,7 @@ func resourcePagerDutyServiceRead(d *schema.ResourceData, meta interface{}) erro
 	service, err := client.GetService(d.Id(), o)
 
 	if err != nil {
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
-		}
-		return err
+		return handleNotFound(err, d, d.Id())
 	}
 
 	d.Set("name", service.Name)

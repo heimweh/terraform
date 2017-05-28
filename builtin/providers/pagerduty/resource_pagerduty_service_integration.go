@@ -130,13 +130,8 @@ func resourcePagerDutyServiceIntegrationRead(d *schema.ResourceData, meta interf
 	o := &pagerduty.GetIntegrationOptions{}
 
 	serviceIntegration, err := client.GetIntegration(service, d.Id(), *o)
-
 	if err != nil {
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
-		}
-		return err
+		return handleNotFound(err, d, fmt.Sprintf("service integration %q", d.Id()))
 	}
 
 	d.Set("name", serviceIntegration.Name)
@@ -173,10 +168,6 @@ func resourcePagerDutyServiceIntegrationDelete(d *schema.ResourceData, meta inte
 	log.Printf("[INFO] Removing PagerDuty service integration %s", d.Id())
 
 	if err := client.DeleteIntegration(service, d.Id()); err != nil {
-		if isNotFound(err) {
-			d.SetId("")
-			return nil
-		}
 		return err
 	}
 
